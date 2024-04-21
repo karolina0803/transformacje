@@ -80,6 +80,15 @@ class Transformacje:
         mins = m.trunc(dec_mins)
         sec = (dec_mins - mins) * 60
         return f'{deg:.0f}\xb0{mins:.0f}\'{sec:.5f}\"'
+    
+    def dms_rad(self, val_dms):
+        deg, mins, sec = val_dms
+        rad = (deg + mins/60 + sec/3600)* (m.pi / 180)
+        return rad
+    
+    def degrees_rad(self, val_dec_degrees):
+        rad = val_dec_degrees * (m.pi / 180)
+        return rad
 
     def XYZ_philamh(self, X, Y, Z, output = 'dec'):
         '''
@@ -123,6 +132,23 @@ class Transformacje:
              return f"{self.rad_degrees(phi)}, {self.rad_degrees(lam)}, {h:.3f}m"
         elif output == "dms":
              return f"{self.rad_dms(phi)}, {self.rad_dms(lam)}, {h:.3f}m"
+         
+    def philamh_XYZ(self, phi, lam, h, inp = 'dec'):
+        '''
+        funkcja: phi, lam, h -> X,Y,Z
+        '''
+        if inp == 'dec':
+            phi2 = self.degrees_rad(phi)
+            lam2 = self.degrees_rad(lam)
+        elif inp == 'dms':
+            phi2 = self.dms_rad(phi)
+            lam2 = self.dms_rad(lam)
+            
+        N = self.obliczenie_N(phi2)
+        X1 = (N + h) * m.cos(phi2) * m.cos(lam2)
+        Y1 = (N + h) * m.cos(phi2) * m.sin(lam2)
+        Z1 = (N*(1-self.e2) + h) * m.sin(phi2)
+        return f"{X1:.3f}, {Y1:.3f}, {Z1:.3f}"
     
 
 
