@@ -51,7 +51,7 @@ class Transformacje:
     
     def dlugosc_luku_poludnika(self, phi):
         '''
-        funkcja pomocnycza - obliczaja dlugosc luku poludnika na podstawie 
+        funkcja pomocnicza - obliczaja dlugosc luku poludnika na podstawie 
         szerokosci geodezyjnej punktu
         '''
         A0 = 1 - (self.e2/4) - ((3*(self.e2**2))/64) - ((5*(self.e2**3))/256)
@@ -66,14 +66,14 @@ class Transformacje:
     
     def rad_degrees(self, val_rad):
         '''
-        funkcja zamianiajaca wartosc w radianach na stopnie dziesietne
+        funkcja zamieniajaca wartosc w radianach na stopnie dziesietne
         '''
         decimal_degrees = val_rad * (180 / m.pi)
         return decimal_degrees
 
     def rad_dms(self, val_rad):
         '''
-        funkcja zamianiajaca wartosc w radianach na stopnie minuty i sekundy 
+        funkcja zamieniajaca wartosc w radianach na stopnie minuty i sekundy 
         (jako lancuch znakow)
         '''
         decimal_degrees = val_rad * (180 / m.pi)
@@ -85,7 +85,7 @@ class Transformacje:
 
     def dms(self, val_dec_degrees):
         '''
-        funkcja zamianiajaca stopnie dziesietne na stopnie minuty i sekundy
+        funkcja zamieniajaca stopnie dziesietne na stopnie minuty i sekundy
         (jako lancuch znakow)
         '''
         deg = m.trunc(val_dec_degrees)
@@ -96,7 +96,7 @@ class Transformacje:
     
     def dms_rad(self, val_dms):
         '''
-        funkcja zamianiajaca wartosc stopnie minuty sekundy na radiany
+        funkcja zamieniajaca wartosc stopnie minuty sekundy na radiany
         '''
         deg, mins, sec = val_dms
         rad = (deg + mins/60 + sec/3600)* (m.pi / 180)
@@ -104,7 +104,7 @@ class Transformacje:
     
     def degrees_rad(self, val_dec_degrees):
         '''
-        funkcja zamianiajaca wartosc stopni dziesietnych na radiany
+        funkcja zamieniajaca wartosc stopni dziesietnych na radiany
         '''
         rad = val_dec_degrees * (m.pi / 180)
         return rad
@@ -329,10 +329,3 @@ class Transformacje:
         x_1992 = x_gk * m1992 - 5300000
         y_1992 = y_gk * m1992 + 500000
         return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
-    
-
-    
-    
-    
-        
-        
