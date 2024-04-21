@@ -5,6 +5,7 @@ Created on Sun Apr 21 17:23:08 2024
 @author: USER
 """
 import math as m
+import numpy as np
 
 class Transformacje:
     
@@ -50,7 +51,8 @@ class Transformacje:
     
     def dlugosc_luku_poludnika(self, phi):
         '''
-        funkcja obliczajaca dlugosc luku poludnika na podstawie phi punktu
+        funkcja pomocnycza - obliczaja dlugosc luku poludnika na podstawie 
+        szerokosci geodezyjnej punktu
         '''
         A0 = 1 - (self.e2/4) - ((3*(self.e2**2))/64) - ((5*(self.e2**3))/256)
         A2 = (3/8) * (self.e2 + ((self.e2**2)/4) + ((15*(self.e2**3))/128))
@@ -63,10 +65,17 @@ class Transformacje:
         return sigma
     
     def rad_degrees(self, val_rad):
+        '''
+        funkcja zamianiajaca wartosc w radianach na stopnie dziesietne
+        '''
         decimal_degrees = val_rad * (180 / m.pi)
         return decimal_degrees
 
     def rad_dms(self, val_rad):
+        '''
+        funkcja zamianiajaca wartosc w radianach na stopnie minuty i sekundy 
+        (jako lancuch znakow)
+        '''
         decimal_degrees = val_rad * (180 / m.pi)
         deg = m.trunc(decimal_degrees)
         dec_mins = (decimal_degrees - deg) * 60
@@ -75,6 +84,10 @@ class Transformacje:
         return f'{deg:.0f}\xb0{mins:.0f}\'{sec:.5f}\"'
 
     def dms(self, val_dec_degrees):
+        '''
+        funkcja zamianiajaca stopnie dziesietne na stopnie minuty i sekundy
+        (jako lancuch znakow)
+        '''
         deg = m.trunc(val_dec_degrees)
         dec_mins = (val_dec_degrees - deg) * 60
         mins = m.trunc(dec_mins)
@@ -82,13 +95,20 @@ class Transformacje:
         return f'{deg:.0f}\xb0{mins:.0f}\'{sec:.5f}\"'
     
     def dms_rad(self, val_dms):
+        '''
+        funkcja zamianiajaca wartosc stopnie minuty sekundy na radiany
+        '''
         deg, mins, sec = val_dms
         rad = (deg + mins/60 + sec/3600)* (m.pi / 180)
         return rad
     
     def degrees_rad(self, val_dec_degrees):
+        '''
+        funkcja zamianiajaca wartosc stopni dziesietnych na radiany
+        '''
         rad = val_dec_degrees * (m.pi / 180)
         return rad
+
 
     def XYZ_philamh(self, X, Y, Z, output = 'dec'):
         '''
@@ -98,7 +118,7 @@ class Transformacje:
         
         -----
         parametry:
-            X, Y, Z [float] - wspolrzedne w ukladzie ortokartezjanskim,
+            X, Y, Z [float] - wspolrzedne w ukladzie ortokartezjanskim
             
         -----
         returns:
@@ -108,8 +128,10 @@ class Transformacje:
             
         w zaleznosci od parametru output szerokosc i dlugosc geodezyjna
         moga byc podane w dwoch formatach:
-                dec - stopnie dziesietne (domyslne)
+                dec - stopnie dziesietne (wartosc domyslna)
                 dms - stopnie, minuty, sekundy
+                calc - zwrocone wartosci w radianach, np. jesli nie potrzeba
+                    dokladnie tych wartosci, tylko do dalszych obliczen
                 
         '''
         p = m.sqrt(X**2 + Y**2)
@@ -132,10 +154,28 @@ class Transformacje:
              return f"{self.rad_degrees(phi)}, {self.rad_degrees(lam)}, {h:.3f}m"
         elif output == "dms":
              return f"{self.rad_dms(phi)}, {self.rad_dms(lam)}, {h:.3f}m"
+        elif output == "calc":
+             return phi, lam, h 
+         
          
     def philamh_XYZ(self, phi, lam, h, inp = 'dec'):
         '''
-        funkcja: phi, lam, h -> X,Y,Z
+        funkcja transformujaca wspolrzedne geodezyjne (szerokosc, dlugosc i wysokosc elipsoidalna)
+        na wspolrzedne w ukladzie ortokartezjanskim (X,Y,Z)
+        
+        ---
+        parametry:
+            phi - szerokosc geodezyjna
+            lam - dlugosc geodezyjna
+            ^ typ w zaleznosci od inp, mozliwosci:
+                    inp = 'dec' -> [float] - stopnie dziesietne (wartosc domyslna)
+                    inp = 'dms' -> [tuple] - krotka: (stopnie, minuty, sekundy)
+            h [float] - wysokosc 
+            
+        ---
+        returns: 
+            X, Y, Z - wspolrzedne ortokartezjanskie jako lancuch znakow 
+            
         '''
         if inp == 'dec':
             phi2 = self.degrees_rad(phi)
@@ -151,5 +191,148 @@ class Transformacje:
         return f"{X1:.3f}, {Y1:.3f}, {Z1:.3f}"
     
 
+    def XYZ_neu(self, X, Y, Z, X0=0, Y0=0, Z0=0):
+        
+        # idk czy to jest dobrze 
+        
+        '''
+        funkcja transformujaca wspolrzedne geocentryczne punktu do 
+        wspolrzednych w ukladzie topocentrycznym (N,E,U)
 
+        ----------
+        parametry:
             
+        X, Y, Z [float] - wspolrzedne geocentryczne punktu
+        X0, Y0, Z0 [float] (domyslne 0) - wspolrzedne geocentryczne drugiego punktu
+
+        -------
+        returns:
+            wspolrzedne w ukladzie topocentrycznym NEU jako lancuch znakow
+        
+
+        '''
+        
+        phi, lam, h = self.XYZ_philamh(X, Y, Z, 'calc')
+        
+        
+        R_neu = np.array([[-np.sin(phi)*np.cos(lam), -np.sin(lam), np.cos(phi)*np.cos(lam)],
+              [-np.sin(phi)*np.sin(lam), np.cos(lam), np.cos(phi)*np.sin(lam)],
+              [np.cos(phi),0,np.sin(phi)]])
+        
+        dX = np.array([[X-X0], [Y-Y0], [Z-Z0]]) #0-1
+        dx = R_neu.T@dX
+        
+        return f"N: {dx[0,0]:.3f}, E: {dx[1,0]:.3f}, U: {dx[2,0]:.3f}"
+    
+    
+    def philamh_2000(self, phi, lam, inp = 'dec'):
+        '''
+        funkcja obliczajaca wspolrzedne w ukladzie pl-2000 na podstawie
+        wspolrzednych geodezyjnych punktu (szerokosci i dlugosci elipsoidalnej)
+        
+        ---
+        parametry:
+            phi, lam - wspolrzedne geodezyjne punktu, w zaleznosci od
+            wartosci inp, moga byc:
+                'dec' -> [float] - stopnie dziesietne (domyslne)
+                'dms' -> [tuple] - krotka: (stopnie, minuty, sekundy)
+                'calc' -> [float] - radiany
+        
+        ---
+        returns: 
+            x, y - wspolrzedne w ukladzie pl-2000 jako lancuch znakow
+            
+        '''
+        if inp == 'dec':
+            phi = self.degrees_rad(phi)
+            lam = self.degrees_rad(lam)
+        elif inp == 'dms':
+            phi = self.dms_rad(phi)
+            lam = self.dms_rad(lam)
+        elif inp == 'calc':
+            phi = phi
+            lam = lam
+        
+        if lam > self.degrees_rad(13.5) and lam < self.degrees_rad(16.5):
+            lam_0 = self.degrees_rad(15)
+            nr_strefy = 5
+        elif lam > self.degrees_rad(16.5) and lam < self.degrees_rad(19.5):
+            lam_0 = self.degrees_rad(18)
+            nr_strefy = 6
+        elif lam > self.degrees_rad(19.5) and lam < self.degrees_rad(22.5):
+            lam_0 = self.degrees_rad(21)
+            nr_strefy = 7
+        elif lam > self.degrees_rad(22.5) and lam < self.degrees_rad(25.5):
+            lam_0 = self.degrees_rad(24)
+            nr_strefy = 8
+        
+        m2000 = 0.999923
+        b2 = (self.a**2)*(1-self.e2)
+        e12 = (self.a**2 - b2)/b2
+        d_lambda = lam - lam_0
+        t = m.tan(phi)
+        eta2 = e12 * ((m.cos(phi))**2)
+         
+        N = self.a/((1 - self.e2 * m.sin(phi)**2)**(1/2))
+        sigma = self.dlugosc_luku_poludnika(phi)
+            
+        x_gk = sigma + (d_lambda**2)/2 * N * m.sin(phi) * m.cos(phi) * (1 + ((d_lambda**2)/12)*((m.cos(phi))**2) * (5 - t**2 + 9 * eta2 + 4 * (eta2**2)) + ((d_lambda**4)/360)*(m.cos(phi))**4 * (61 - 58*(t**2) + t**4 + 270*eta2  - 330 * eta2 * (t**2)))
+        y_gk = d_lambda * N * m.cos(phi) * ( 1 + ((d_lambda**2)/6) * m.cos(phi)**2 * (1 - t**2 + eta2)+ ((d_lambda**4)/120)*(m.cos(phi))**4 * (5 - 18*(t**2) + t**4 + 14*eta2  - 58 * eta2 * (t**2)))
+        
+        x_2000 = x_gk * m2000
+        y_2000 = y_gk * m2000 + 500000 + nr_strefy * 1000000
+        return f"X2000: {x_2000:.3f}, Y2000: {y_2000:.3f}"
+    
+    def philamh_1992(self, phi, lam, inp = 'dec'):
+        '''
+        funkcja obliczajaca wspolrzedne w ukladzie pl-1992 na podstawie
+        wspolrzednych geodezyjnych punktu (szerokosci i dlugosci elipsoidalnej)
+        
+        ---
+        parametry:
+            phi, lam - wspolrzedne geodezyjne punktu, w zaleznosci od
+            wartosci inp, moga byc:
+                'dec' -> [float] - stopnie dziesietne (domyslne)
+                'dms' -> [tuple] - krotka: (stopnie, minuty, sekundy)
+                'calc' -> [float] - radiany
+        
+        ---
+        returns: 
+            x, y - wspolrzedne w ukladzie pl-1992 jako lancuch znakow
+            
+        '''
+        if inp == 'dec':
+            phi = self.degrees_rad(phi)
+            lam = self.degrees_rad(lam)
+        elif inp == 'dms':
+            phi = self.dms_rad(phi)
+            lam = self.dms_rad(lam)
+        elif inp == 'calc':
+            phi = phi
+            lam = lam
+        
+        lam_0 = self.degrees_rad(19)
+        m1992 = 0.9993
+        
+        b2 = (self.a**2)*(1-self.e2)
+        e12 = (self.a**2 - b2)/b2
+        d_lambda = lam - lam_0
+        t = m.tan(phi)
+        eta2 = e12 * ((m.cos(phi))**2)
+         
+        N = self.a/((1 - self.e2 * m.sin(phi)**2)**(1/2))
+        sigma = self.dlugosc_luku_poludnika(phi)
+            
+        x_gk = sigma + (d_lambda**2)/2 * N * m.sin(phi) * m.cos(phi) * (1 + ((d_lambda**2)/12)*((m.cos(phi))**2) * (5 - t**2 + 9 * eta2 + 4 * (eta2**2)) + ((d_lambda**4)/360)*(m.cos(phi))**4 * (61 - 58*(t**2) + t**4 + 270*eta2  - 330 * eta2 * (t**2)))
+        y_gk = d_lambda * N * m.cos(phi) * ( 1 + ((d_lambda**2)/6) * m.cos(phi)**2 * (1 - t**2 + eta2)+ ((d_lambda**4)/120)*(m.cos(phi))**4 * (5 - 18*(t**2) + t**4 + 14*eta2  - 58 * eta2 * (t**2)))
+        
+        x_1992 = x_gk * m1992 - 5300000
+        y_1992 = y_gk * m1992 + 500000
+        return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
+    
+
+    
+    
+    
+        
+        
