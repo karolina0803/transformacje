@@ -6,6 +6,7 @@ Created on Sun Apr 21 17:23:08 2024
 """
 import math as m
 import numpy as np
+import sys 
 
 class Transformacje:
     
@@ -151,9 +152,11 @@ class Transformacje:
         lam = m.atan2(Y,X)
         
         if output == "dec":
-             return f"{self.rad_degrees(phi)}, {self.rad_degrees(lam)}, {h:.3f}m"
+            return self.rad_degrees(phi), self.rad_degrees(lam), h
+             # return f"{self.rad_degrees(phi)}, {self.rad_degrees(lam)}, {h:.3f}m"
         elif output == "dms":
-             return f"{self.rad_dms(phi)}, {self.rad_dms(lam)}, {h:.3f}m"
+            return self.rad_dms(phi), self.rad_dms(lam), h
+             # return f"{self.rad_dms(phi)}, {self.rad_dms(lam)}, {h:.3f}m"
         elif output == "calc":
              return phi, lam, h 
          
@@ -174,7 +177,7 @@ class Transformacje:
             
         ---
         returns: 
-            X, Y, Z - wspolrzedne ortokartezjanskie jako lancuch znakow 
+            X, Y, Z - wspolrzedne ortokartezjanskie 
             
         '''
         if inp == 'dec':
@@ -188,7 +191,8 @@ class Transformacje:
         X1 = (N + h) * m.cos(phi2) * m.cos(lam2)
         Y1 = (N + h) * m.cos(phi2) * m.sin(lam2)
         Z1 = (N*(1-self.e2) + h) * m.sin(phi2)
-        return f"{X1:.3f}, {Y1:.3f}, {Z1:.3f}"
+        return X1, Y1, Z1
+        # return f"{X1:.3f}, {Y1:.3f}, {Z1:.3f}"
     
 
     def XYZ_neu(self, X, Y, Z, X0=0, Y0=0, Z0=0):
@@ -329,3 +333,61 @@ class Transformacje:
         x_1992 = x_gk * m1992 - 5300000
         y_1992 = y_gk * m1992 + 500000
         return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
+    
+if __name__ == "__main__":
+    # utworzenie obiektu
+    geo = Transformacje(model = "wgs84")
+    # dane XYZ geocentryczne
+    # X = 3664940.500; Y = 1409153.590; Z = 5009571.170
+    # phi, lam, h = geo.xyz2plh(X, Y, Z)
+    # print(phi, lam, h)
+    # phi, lam, h = geo.xyz2plh2(X, Y, Z)
+    # print(phi, lam, h)
+    
+    print(sys.argv) 
+    input_file_path = sys.argv[-1]
+    
+    if "--xyz2plh" in sys.argv:
+    
+        coords_plh = []
+        with open(input_file_path, 'r') as f:
+            lines = f.readlines()
+            lines = lines[4:]
+            for line in lines:
+                line = line.strip()
+                x_str, y_str, z_str = line.split(',')
+                x, y, z = float(x_str), float(y_str), float(z_str)
+                # print(x,y,z)
+                p, l, h = geo.XYZ_philamh(x, y, z)
+                # print(p,l,h)
+                coords_plh.append([p, l, h])
+                
+        with open('result_XYZ_philamh.txt', 'w') as f1:
+            f1.write('phi [deg], lam [deg], h [m]\n')
+            for coords in coords_plh:
+                line = ','.join([str(coord) for coord in coords])
+                f1.write(line + '\n')
+                
+    elif "--plh2xyz" in sys.argv:
+        
+        coords_xyz = []
+        with open(input_file_path, 'r') as f2:
+            lines = f2.readlines()
+            lines = lines[1:]
+            for line in lines:
+                line = line.strip()
+                phi_str, lam_str, h_str = line.split(',')
+                phi, lam, h = float(phi_str), float(lam_str), float(h_str)
+                x, y, z = geo.philamh_XYZ(phi, lam, h)
+                coords_xyz.append([x, y, z])
+                
+        with open('result_philamh_XYZ.txt', 'w') as f4:
+            f4.write('X [m], Y [m], Z [m]\n')
+            for coords in coords_xyz:
+                line = ','.join([str(coord) for coord in coords])
+                f4.write(line + '\n')
+            
+    elif '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
+            print('uzyj tylko jednej flagi')
+            
+            
