@@ -195,7 +195,7 @@ class Transformacje:
         # return f"{X1:.3f}, {Y1:.3f}, {Z1:.3f}"
     
 
-    def XYZ_neu(self, X, Y, Z, X0=0, Y0=0, Z0=0):
+    def XYZ_neu(self, X, Y, Z, X0, Y0, Z0):
         
         # idk czy to jest dobrze 
         
@@ -218,7 +218,6 @@ class Transformacje:
         
         phi, lam, h = self.XYZ_philamh(X, Y, Z, 'calc')
         
-        
         R_neu = np.array([[-np.sin(phi)*np.cos(lam), -np.sin(lam), np.cos(phi)*np.cos(lam)],
               [-np.sin(phi)*np.sin(lam), np.cos(lam), np.cos(phi)*np.sin(lam)],
               [np.cos(phi),0,np.sin(phi)]])
@@ -226,7 +225,8 @@ class Transformacje:
         dX = np.array([[X-X0], [Y-Y0], [Z-Z0]]) #0-1
         dx = R_neu.T@dX
         
-        return f"N: {dx[0,0]:.3f}, E: {dx[1,0]:.3f}, U: {dx[2,0]:.3f}"
+        return dx[0,0], dx[1,0], dx[2,0]
+        # return f"N: {dx[0,0]:.3f}, E: {dx[1,0]:.3f}, U: {dx[2,0]:.3f}"
     
     
     def philamh_2000(self, phi, lam, inp = 'dec'):
@@ -285,7 +285,8 @@ class Transformacje:
         
         x_2000 = x_gk * m2000
         y_2000 = y_gk * m2000 + 500000 + nr_strefy * 1000000
-        return f"X2000: {x_2000:.3f}, Y2000: {y_2000:.3f}"
+        return x_2000, y_2000
+        # return f"X2000: {x_2000:.3f}, Y2000: {y_2000:.3f}"
     
     def philamh_1992(self, phi, lam, inp = 'dec'):
         '''
@@ -332,19 +333,25 @@ class Transformacje:
         
         x_1992 = x_gk * m1992 - 5300000
         y_1992 = y_gk * m1992 + 500000
-        return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
+        return x_1992, y_1992
+        # return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
     
 if __name__ == "__main__":
-    # utworzenie obiektu
-    geo = Transformacje(model = "wgs84")
-    # dane XYZ geocentryczne
-    # X = 3664940.500; Y = 1409153.590; Z = 5009571.170
-    # phi, lam, h = geo.xyz2plh(X, Y, Z)
-    # print(phi, lam, h)
-    # phi, lam, h = geo.xyz2plh2(X, Y, Z)
-    # print(phi, lam, h)
+    print(sys.argv)
+    if sys.argv[1] == 'wgs84':
+        model = 'wgs84'
+    elif sys.argv[1] == 'grs80':
+        model = 'grs80'
+    elif sys.argv[1] == 'elipsoida_krasowskiego':
+        model = 'elipsoida_krasowskiego'
+    elif sys.argv[1] != 'wgs84' and sys.argv[1] != 'grs80' and sys.argv[1] != 'elipsoida_krasowskiego':
+        print('podany model nie jest obslugiwany')
+        
+    geo = Transformacje(model)
     
-    print(sys.argv) 
+    print(f'korzystasz z modelu {model}')
+    geo = Transformacje(model = "wgs84")
+  
     input_file_path = sys.argv[-1]
     
     if '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
@@ -389,7 +396,25 @@ if __name__ == "__main__":
             for coords in coords_xyz:
                 line = ','.join([str(coord) for coord in coords])
                 f4.write(line + '\n')
-            
-   
+                
+    elif "--xyz2neu" in sys.argv:
+        
+        coords_neu = []
+        with open(input_file_path, 'r') as f5:
+            lines = f5.readlines()
+            lines = lines[4:]
+            for line in lines:
+                line = line.strip()
+                x_str, y_str, z_str = line.split(',')
+                x, y, z = float(x_str), float(y_str), float(z_str)
+                # X0, Y0, Z0 = 
+                # n, e, u = geo.XYZ_neu(x, y, z, X0, Y0, Z0)
+                # coords_neu.append([n, e, u])
+                
+        with open('result_XYZ_NEU.txt', 'w') as f6:
+            f6.write('N , E , U \n')
+            for coords in coords_neu:
+                line = ','.join([str(coord) for coord in coords])
+                f6.write(line + '\n')
             
             
