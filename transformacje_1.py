@@ -347,7 +347,10 @@ if __name__ == "__main__":
     print(sys.argv) 
     input_file_path = sys.argv[-1]
     
-    if "--xyz2plh" in sys.argv:
+    if '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
+            print('uzyj tylko jednej flagi')
+    
+    elif "--xyz2plh" in sys.argv:
     
         coords_plh = []
         with open(input_file_path, 'r') as f:
@@ -387,7 +390,6 @@ if __name__ == "__main__":
                 line = ','.join([str(coord) for coord in coords])
                 f4.write(line + '\n')
             
-    elif '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
-            print('uzyj tylko jednej flagi')
+   
             
             
