@@ -123,9 +123,9 @@ class Transformacje:
             
         -----
         returns:
-            phi [str] - szerokosc geodezyjna
-            lam [str] - dlugosc geodezyjna
-            h [str] - wysokosc elipsoidalna [m]
+            phi [float] - szerokosc geodezyjna
+            lam [float] - dlugosc geodezyjna
+            h [float] - wysokosc elipsoidalna [m]
             
         w zaleznosci od parametru output szerokosc i dlugosc geodezyjna
         moga byc podane w dwoch formatach:
@@ -146,17 +146,15 @@ class Transformacje:
             if abs(phi_poprzednie - phi)<(0.000001/206265):
                 break
         N = self.obliczenie_N(phi)
-        # N = self.a/((1 - self.e2 * m.sin(phi)**2)**(1/2))
-        # h = p/m.cos(phi_poprzednie) - N
         h = p/m.cos(phi) - N
         lam = m.atan2(Y,X)
         
         if output == "dec":
             return self.rad_degrees(phi), self.rad_degrees(lam), h
-             # return f"{self.rad_degrees(phi)}, {self.rad_degrees(lam)}, {h:.3f}m"
+             
         elif output == "dms":
             return self.rad_dms(phi), self.rad_dms(lam), h
-             # return f"{self.rad_dms(phi)}, {self.rad_dms(lam)}, {h:.3f}m"
+             
         elif output == "calc":
              return phi, lam, h 
          
@@ -183,6 +181,7 @@ class Transformacje:
         if inp == 'dec':
             phi2 = self.degrees_rad(phi)
             lam2 = self.degrees_rad(lam)
+            
         elif inp == 'dms':
             phi2 = self.dms_rad(phi)
             lam2 = self.dms_rad(lam)
@@ -191,8 +190,8 @@ class Transformacje:
         X1 = (N + h) * m.cos(phi2) * m.cos(lam2)
         Y1 = (N + h) * m.cos(phi2) * m.sin(lam2)
         Z1 = (N*(1-self.e2) + h) * m.sin(phi2)
+        
         return X1, Y1, Z1
-        # return f"{X1:.3f}, {Y1:.3f}, {Z1:.3f}"
     
 
     def XYZ_neu(self, X, Y, Z, X0, Y0, Z0):
@@ -244,7 +243,7 @@ class Transformacje:
         
         ---
         returns: 
-            x, y - wspolrzedne w ukladzie pl-2000 jako lancuch znakow
+            x_2000, y_2000 [float] - wspolrzedne w ukladzie pl-2000 
             
         '''
         if inp == 'dec':
@@ -286,7 +285,6 @@ class Transformacje:
         x_2000 = x_gk * m2000
         y_2000 = y_gk * m2000 + 500000 + nr_strefy * 1000000
         return x_2000, y_2000
-        # return f"X2000: {x_2000:.3f}, Y2000: {y_2000:.3f}"
     
     def philamh_1992(self, phi, lam, inp = 'dec'):
         '''
@@ -303,7 +301,7 @@ class Transformacje:
         
         ---
         returns: 
-            x, y - wspolrzedne w ukladzie pl-1992 jako lancuch znakow
+            x_1992, y_1992 [float]- wspolrzedne w ukladzie pl-1992
             
         '''
         if inp == 'dec':
@@ -335,9 +333,19 @@ class Transformacje:
         y_1992 = y_gk * m1992 + 500000
         return x_1992, y_1992
         # return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
+        
+        
+        
+        
     
 if __name__ == "__main__":
+    
     print(sys.argv)
+    
+    if len(sys.argv)<4:
+        print("\nwymagana ilosc argumentow to 4\n ['nazwa_programu'.py, model elipsoidy, wybrana flaga, plik wejsciowy]")
+        sys.exit(0)
+    
     if sys.argv[1] == 'wgs84':
         model = 'wgs84'
     elif sys.argv[1] == 'grs80':
@@ -345,76 +353,143 @@ if __name__ == "__main__":
     elif sys.argv[1] == 'elipsoida_krasowskiego':
         model = 'elipsoida_krasowskiego'
     elif sys.argv[1] != 'wgs84' and sys.argv[1] != 'grs80' and sys.argv[1] != 'elipsoida_krasowskiego':
-        print('podany model nie jest obslugiwany')
-        
-    geo = Transformacje(model)
+        print(f"\n nie rozpoznano modelu {sys.argv[1]}")
+        print('\n wprowadz model elipsoidy, ktory jest obslugiwany:\n  > wgs84\n  > grs80\n  > elipsoida_krasowskiego')
+        sys.exit(0)
     
-    print(f'korzystasz z modelu {model}')
-    geo = Transformacje(model = "wgs84")
-  
+    geo = Transformacje(model)
+    print(f'\n korzystasz z modelu {model}\n')
+    
     input_file_path = sys.argv[-1]
     
-    if '--xyz2plh' in sys.argv and '--plh2xyz' in sys.argv:
-            print('uzyj tylko jednej flagi')
+    lista_flag = ['--xyz2plh', '--plh2xyz', "--xyz2neu", "--plh2pl2000", "--plh2pl1992"]
+    
+    if len(set(lista_flag) & set(sys.argv)) != 1:
+            print(f"\n uzyj JEDNEJ z dostepnych flag:\n > dostepne flagi: {lista_flag}" )
+    
     
     elif "--xyz2plh" in sys.argv:
     
-        coords_plh = []
-        with open(input_file_path, 'r') as f:
-            lines = f.readlines()
-            lines = lines[4:]
-            for line in lines:
-                line = line.strip()
-                x_str, y_str, z_str = line.split(',')
-                x, y, z = float(x_str), float(y_str), float(z_str)
-                # print(x,y,z)
-                p, l, h = geo.XYZ_philamh(x, y, z)
-                # print(p,l,h)
-                coords_plh.append([p, l, h])
+        try:
+            coords_plh = []
+            with open(input_file_path, 'r') as f:
+                lines = f.readlines()
+                lines = lines[4:]
+                for line in lines:
+                    line = line.strip()
+                    x_str, y_str, z_str = line.split(',')
+                    x, y, z = float(x_str), float(y_str), float(z_str)
+                    p, l, h = geo.XYZ_philamh(x, y, z)
+                    # p_r = round(p, 6)
+                    # l_r = round(l, 6)
+                    # h_r = round(h, 3)
+                    coords_plh.append([p, l, h])
                 
-        with open('result_XYZ_philamh.txt', 'w') as f1:
-            f1.write('phi [deg], lam [deg], h [m]\n')
-            for coords in coords_plh:
-                line = ','.join([str(coord) for coord in coords])
-                f1.write(line + '\n')
+            with open('result_XYZ_philamh.txt', 'w') as f1:
+                f1.write('phi [deg], lam [deg], h [m]\n')
+                for coords in coords_plh:
+                    line = ','.join([str(coord) for coord in coords])
+                    f1.write(line + '\n')
+        
+        except FileNotFoundError:
+            print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
                 
+            
     elif "--plh2xyz" in sys.argv:
         
-        coords_xyz = []
-        with open(input_file_path, 'r') as f2:
-            lines = f2.readlines()
-            lines = lines[1:]
-            for line in lines:
-                line = line.strip()
-                phi_str, lam_str, h_str = line.split(',')
-                phi, lam, h = float(phi_str), float(lam_str), float(h_str)
-                x, y, z = geo.philamh_XYZ(phi, lam, h)
-                coords_xyz.append([x, y, z])
+        try:
+            coords_xyz = []
+            with open(input_file_path, 'r') as f2:
+                lines = f2.readlines()
+                lines = lines[1:]
+                for line in lines:
+                    line = line.strip()
+                    phi_str, lam_str, h_str = line.split(',')
+                    phi, lam, h = float(phi_str), float(lam_str), float(h_str)
+                    x, y, z = geo.philamh_XYZ(phi, lam, h)
+                  
+                    coords_xyz.append([x, y, z])
+                    
+            with open('result_philamh_XYZ.txt', 'w') as f4:
+                f4.write('X [m], Y [m], Z [m]\n')
+                for coords in coords_xyz:
+                    line = ','.join([str(coord) for coord in coords])
+                    f4.write(line + '\n')
+                    
+        except FileNotFoundError:
+            print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
                 
-        with open('result_philamh_XYZ.txt', 'w') as f4:
-            f4.write('X [m], Y [m], Z [m]\n')
-            for coords in coords_xyz:
-                line = ','.join([str(coord) for coord in coords])
-                f4.write(line + '\n')
-                
+            
     elif "--xyz2neu" in sys.argv:
         
-        coords_neu = []
-        with open(input_file_path, 'r') as f5:
-            lines = f5.readlines()
-            lines = lines[4:]
-            for line in lines:
-                line = line.strip()
-                x_str, y_str, z_str = line.split(',')
-                x, y, z = float(x_str), float(y_str), float(z_str)
-                # X0, Y0, Z0 = 
-                # n, e, u = geo.XYZ_neu(x, y, z, X0, Y0, Z0)
-                # coords_neu.append([n, e, u])
+        try:
+            coords_neu = []
+            with open(input_file_path, 'r') as f5:
+                lines = f5.readlines()
+                lines = lines[4:]
+                for line in lines:
+                    line = line.strip()
+                    x_str, y_str, z_str = line.split(',')
+                    x, y, z = float(x_str), float(y_str), float(z_str)
+                    # X0, Y0, Z0 = 
+                    # n, e, u = geo.XYZ_neu(x, y, z, X0, Y0, Z0)
+                    # coords_neu.append([n, e, u])
+                    
+            with open('result_XYZ_NEU.txt', 'w') as f6:
+                f6.write('N , E , U \n')
+                for coords in coords_neu:
+                    line = ','.join([str(coord) for coord in coords])
+                    f6.write(line + '\n')
+                    
+        except FileNotFoundError:
+            print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
+            
                 
-        with open('result_XYZ_NEU.txt', 'w') as f6:
-            f6.write('N , E , U \n')
-            for coords in coords_neu:
-                line = ','.join([str(coord) for coord in coords])
-                f6.write(line + '\n')
+    elif "--plh2pl2000" in sys.argv:
+    
+        try:
+            coords_pl2000 = []
+            with open(input_file_path, 'r') as f7:
+                lines = f7.readlines()
+                lines = lines[1:]
+                for line in lines:
+                    line = line.strip()
+                    phi_str, lam_str, h_str = line.split(',')
+                    phi, lam, h = float(phi_str), float(lam_str), float(h_str)
+                    x_2000, y_2000 = geo.philamh_2000(phi, lam)
+                    
+                    coords_pl2000.append([x_2000, y_2000])
+                    
+            with open('result_philamh_pl2000.txt', 'w') as f8:
+                f8.write('X [m], Y [m] \n')
+                for coords in coords_pl2000:
+                    line = ','.join([str(coord) for coord in coords])
+                    f8.write(line + '\n')
             
+        except FileNotFoundError:
+            print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
+                
             
+    elif "--plh2pl1992" in sys.argv:
+        
+        try:
+            coords_pl1992 = []
+            with open(input_file_path, 'r') as f9:
+                lines = f9.readlines()
+                lines = lines[1:]
+                for line in lines:
+                    line = line.strip()
+                    phi_str, lam_str, h_str = line.split(',')
+                    phi, lam, h = float(phi_str), float(lam_str), float(h_str)
+                    x_1992, y_1992 = geo.philamh_1992(phi, lam)
+                
+                    coords_pl1992.append([x_1992, y_1992])
+                    
+            with open('result_philamh_pl1992.txt', 'w') as f10:
+                f10.write('X [m], Y [m] \n')
+                for coords in coords_pl1992:
+                    line = ','.join([str(coord) for coord in coords])
+                    f10.write(line + '\n')
+                    
+        except FileNotFoundError:
+            print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
