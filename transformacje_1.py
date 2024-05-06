@@ -193,39 +193,23 @@ class Transformacje:
         
         return X1, Y1, Z1
     
-
+    
     def XYZ_neu(self, X, Y, Z, X0, Y0, Z0):
+       
+        phi, lam, _ = [m.radians(coord) for coord in self.XYZ_philamh(X0, Y0, Z0)]
         
-        # idk czy to jest dobrze 
+        R = np.array([[-m.sin(lam), -m.sin(phi)*m.cos(lam), m.cos(phi)*m.cos(lam)],
+                     [m.cos(lam), -m.sin(phi)*m.sin(lam), m.cos(phi)*m.sin(lam)],
+                     [0, m.cos(phi), m.sin(phi)]])
         
-        '''
-        funkcja transformujaca wspolrzedne geocentryczne punktu do 
-        wspolrzednych w ukladzie topocentrycznym (N,E,U)
-
-        ----------
-        parametry:
-            
-        X, Y, Z [float] - wspolrzedne geocentryczne punktu
-        X0, Y0, Z0 [float] (domyslne 0) - wspolrzedne geocentryczne drugiego punktu
-
-        -------
-        returns:
-            wspolrzedne w ukladzie topocentrycznym NEU jako lancuch znakow
+        xyz_t = np.array([[X-X0],
+                         [Y-Y0],
+                         [Z-Z0]])
         
 
-        '''
+        [[E], [N], [U]] = R.T @ xyz_t
         
-        phi, lam, h = self.XYZ_philamh(X, Y, Z, 'calc')
-        
-        R_neu = np.array([[-np.sin(phi)*np.cos(lam), -np.sin(lam), np.cos(phi)*np.cos(lam)],
-              [-np.sin(phi)*np.sin(lam), np.cos(lam), np.cos(phi)*np.sin(lam)],
-              [np.cos(phi),0,np.sin(phi)]])
-        
-        dX = np.array([[X-X0], [Y-Y0], [Z-Z0]]) #0-1
-        dx = R_neu.T@dX
-        
-        return dx[0,0], dx[1,0], dx[2,0]
-        # return f"N: {dx[0,0]:.3f}, E: {dx[1,0]:.3f}, U: {dx[2,0]:.3f}"
+        return N, E, U
     
     
     def philamh_2000(self, phi, lam, inp = 'dec'):
@@ -334,17 +318,15 @@ class Transformacje:
         return x_1992, y_1992
         # return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
         
-        
-        
-        
+    
     
 if __name__ == "__main__":
     
     print(sys.argv)
     
-    if len(sys.argv)<4:
-        print("\nwymagana ilosc argumentow to 4\n ['nazwa_programu'.py, model elipsoidy, wybrana flaga, plik wejsciowy]")
-        sys.exit(0)
+    # if len(sys.argv)<4:
+    #     print("\nwymagana ilosc argumentow to 4\n ['nazwa_programu'.py, model elipsoidy, wybrana flaga, plik wejsciowy]")
+    #     sys.exit(0)
     
     if sys.argv[1] == 'wgs84':
         model = 'wgs84'
@@ -431,9 +413,9 @@ if __name__ == "__main__":
                     line = line.strip()
                     x_str, y_str, z_str = line.split(',')
                     x, y, z = float(x_str), float(y_str), float(z_str)
-                    # X0, Y0, Z0 = 
-                    # n, e, u = geo.XYZ_neu(x, y, z, X0, Y0, Z0)
-                    # coords_neu.append([n, e, u])
+                    X0, Y0, Z0 = [float(coord)for coord in sys.argv[-4:-1]]
+                    n, e, u = geo.XYZ_neu(x, y, z, X0, Y0, Z0)
+                    coords_neu.append([n, e, u])
                     
             with open('result_XYZ_NEU.txt', 'w') as f6:
                 f6.write('N , E , U \n')
@@ -493,3 +475,8 @@ if __name__ == "__main__":
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
+            
+            
+    # x, y, z = 1,1, 6356752.31424518 - 2
+    # x0, y0, z0 = 1, 1, 6356752.31424518 
+    # enu = geo.XYZ_neu(x,y,z,x0,y0, z0)
