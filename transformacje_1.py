@@ -338,6 +338,9 @@ if __name__ == "__main__":
         print(f"\n nie rozpoznano modelu {sys.argv[1]}")
         print('\n wprowadz model elipsoidy, ktory jest obslugiwany:\n  > wgs84\n  > grs80\n  > elipsoida_krasowskiego')
         sys.exit(0)
+        
+    if '--header_lines' in sys.argv:
+        header_lines = int(sys.argv[2])
     
     geo = Transformacje(model)
     print(f'\n korzystasz z modelu {model}\n')
@@ -356,7 +359,7 @@ if __name__ == "__main__":
             coords_plh = []
             with open(input_file_path, 'r') as f:
                 lines = f.readlines()
-                lines = lines[4:]
+                lines = lines[header_lines:]
                 for line in lines:
                     line = line.strip()
                     x_str, y_str, z_str = line.split(',')
@@ -383,7 +386,7 @@ if __name__ == "__main__":
             coords_xyz = []
             with open(input_file_path, 'r') as f2:
                 lines = f2.readlines()
-                lines = lines[1:]
+                lines = lines[header_lines:]
                 for line in lines:
                     line = line.strip()
                     phi_str, lam_str, h_str = line.split(',')
@@ -408,7 +411,7 @@ if __name__ == "__main__":
             coords_neu = []
             with open(input_file_path, 'r') as f5:
                 lines = f5.readlines()
-                lines = lines[4:]
+                lines = lines[header_lines:]
                 for line in lines:
                     line = line.strip()
                     x_str, y_str, z_str = line.split(',')
@@ -433,7 +436,7 @@ if __name__ == "__main__":
             coords_pl2000 = []
             with open(input_file_path, 'r') as f7:
                 lines = f7.readlines()
-                lines = lines[1:]
+                lines = lines[header_lines:]
                 for line in lines:
                     line = line.strip()
                     phi_str, lam_str, h_str = line.split(',')
@@ -458,7 +461,7 @@ if __name__ == "__main__":
             coords_pl1992 = []
             with open(input_file_path, 'r') as f9:
                 lines = f9.readlines()
-                lines = lines[1:]
+                lines = lines[header_lines:]
                 for line in lines:
                     line = line.strip()
                     phi_str, lam_str, h_str = line.split(',')
