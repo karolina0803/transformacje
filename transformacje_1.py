@@ -477,6 +477,3 @@ if __name__ == "__main__":
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
             
             
-    # x, y, z = 1,1, 6356752.31424518 - 2
-    # x0, y0, z0 = 1, 1, 6356752.31424518 
-    # enu = geo.XYZ_neu(x,y,z,x0,y0, z0)
