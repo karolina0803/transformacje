@@ -195,6 +195,19 @@ class Transformacje:
     
     
     def XYZ_neu(self, X, Y, Z, X0, Y0, Z0):
+        """
+        
+
+        Parameters
+        ----------
+        X,Y,Z - [float] współrzędne geocentryczne satelity (te podlegają transformacji)
+        X0, Y0, Z0 - [float] współrzędne geocentryczne anteny
+
+        Returns
+        -------
+       N, E, U - [float] współrzędne satelity w układzie topocentrycznym
+
+        """
        
         phi, lam, _ = [m.radians(coord) for coord in self.XYZ_philamh(X0, Y0, Z0)]
         
@@ -323,10 +336,7 @@ class Transformacje:
 if __name__ == "__main__":
     
     print(sys.argv)
-    
-    # if len(sys.argv)<4:
-    #     print("\nwymagana ilosc argumentow to 4\n ['nazwa_programu'.py, model elipsoidy, wybrana flaga, plik wejsciowy]")
-    #     sys.exit(0)
+
     
     if sys.argv[1] == 'wgs84':
         model = 'wgs84'
