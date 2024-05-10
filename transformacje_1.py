@@ -329,7 +329,28 @@ class Transformacje:
         x_1992 = x_gk * m1992 - 5300000
         y_1992 = y_gk * m1992 + 500000
         return x_1992, y_1992
-        # return f"X1992: {x_1992:.3f}, Y1992: {y_1992:.3f}"
+    
+        
+    def transf_kras(self, xk, yk, zk):
+        d11 = 1 - (0.84078048 * 10**(-6))
+        d21 = 4.08960007 * 10**(-6)
+        d31 = 0.25613864 * 10**(-6)
+        d12 = -4.08959962 * 10**(-6)
+        d22 = 1 - (0.84078196 * 10**(-6))
+        d32 = -1.73888494 * 10**(-6)
+        d13 = -0.25614575 * 10**(-6)
+        d23 = 1.73888389 * 10**(-6)
+        d33 = 1 - (0.84077363 * 10**(-6))
+        
+        Tx = -33.4297 
+        Ty = 146.5746
+        Tz = 76.2865
+        
+        xg = d11 * (xk - Tx) + d12 * (yk - Ty) + d13 * (zk - Tz)
+        yg = d21 * (xk - Tx) + d22 * (yk - Ty) + d23 * (zk - Tz)
+        zg = d31 * (xk - Tx) + d32 * (yk - Ty) + d33 * (zk - Tz)
+        
+        return xg, yg, zg
         
     
     
@@ -337,27 +358,26 @@ if __name__ == "__main__":
     
     print(sys.argv)
 
-    
-    if sys.argv[1] == 'wgs84':
+    if sys.argv[2] == 'wgs84':
         model = 'wgs84'
-    elif sys.argv[1] == 'grs80':
+    elif sys.argv[2] == 'grs80':
         model = 'grs80'
-    elif sys.argv[1] == 'elipsoida_krasowskiego':
+    elif sys.argv[2] == 'elipsoida_krasowskiego':
         model = 'elipsoida_krasowskiego'
-    elif sys.argv[1] != 'wgs84' and sys.argv[1] != 'grs80' and sys.argv[1] != 'elipsoida_krasowskiego':
+    elif sys.argv[2] != 'wgs84' and sys.argv[1] != 'grs80' and sys.argv[1] != 'elipsoida_krasowskiego':
         print(f"\n nie rozpoznano modelu {sys.argv[1]}")
         print('\n wprowadz model elipsoidy, ktory jest obslugiwany:\n  > wgs84\n  > grs80\n  > elipsoida_krasowskiego')
         sys.exit(0)
         
-    if '--header_lines' in sys.argv:
-        header_lines = int(sys.argv[2])
+    
+    header_lines = int(sys.argv[1])
     
     geo = Transformacje(model)
     print(f'\n korzystasz z modelu {model}\n')
     
     input_file_path = sys.argv[-1]
     
-    lista_flag = ['--xyz2plh', '--plh2xyz', "--xyz2neu", "--plh2pl2000", "--plh2pl1992"]
+    lista_flag = ['--xyz2plh', '--plh2xyz', "--xyz2neu", "--plh2pl2000", "--plh2pl1992", "--XYZkras2XYZgrs80", "--XYZgrs802pl2000", "--XYZgrs802pl1992"]
     
     if len(set(lista_flag) & set(sys.argv)) != 1:
             print(f"\n uzyj JEDNEJ z dostepnych flag:\n > dostepne flagi: {lista_flag}" )
@@ -375,22 +395,23 @@ if __name__ == "__main__":
                     x_str, y_str, z_str = line.split(',')
                     x, y, z = float(x_str), float(y_str), float(z_str)
                     p, l, h = geo.XYZ_philamh(x, y, z)
-                    # p_r = round(p, 6)
-                    # l_r = round(l, 6)
-                    # h_r = round(h, 3)
                     coords_plh.append([p, l, h])
                 
             with open('result_XYZ_philamh.txt', 'w') as f1:
-                f1.write('phi [deg], lam [deg], h [m]\n')
+                f1.write("    phi [deg]      lam [deg]         h [m]\n")
+                f1.write(47*'-'+'\n')
                 for coords in coords_plh:
-                    line = ','.join([str(coord) for coord in coords])
+                    line = ','.join([f"{coord:^15.6f}" if index!= 2 else f"{coord:^15.3f}" for index, coord in enumerate(coords)])
                     f1.write(line + '\n')
+                    
+            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZ_philamh.txt'")
         
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
                 
             
     elif "--plh2xyz" in sys.argv:
+        #przy przeliczaniu plh na cos trzeba chyba napisac ze format phi lam do wstawienia to stopnie dziesietne ?
         
         try:
             coords_xyz = []
@@ -406,10 +427,13 @@ if __name__ == "__main__":
                     coords_xyz.append([x, y, z])
                     
             with open('result_philamh_XYZ.txt', 'w') as f4:
-                f4.write('X [m], Y [m], Z [m]\n')
+                f4.write('     X [m]           Y [m]           Z [m]\n')
+                f4.write(47*'-'+'\n')
                 for coords in coords_xyz:
-                    line = ','.join([str(coord) for coord in coords])
+                    line = ','.join([f"{coord:^15.3f}" for coord in coords])
                     f4.write(line + '\n')
+                    
+            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_XYZ.txt'")
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -431,14 +455,17 @@ if __name__ == "__main__":
                     coords_neu.append([n, e, u])
                     
             with open('result_XYZ_NEU.txt', 'w') as f6:
-                f6.write('N , E , U \n')
+                f6.write('     N [m]          E [m]           U [m]\n')
+                f6.write(44*'-'+'\n')
                 for coords in coords_neu:
-                    line = ','.join([str(coord) for coord in coords])
+                    line = ', '.join([f"{coord:^14.3f}" for coord in coords])
                     f6.write(line + '\n')
+                    
+            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZ_NEU.txt'")
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
-            
+    
                 
     elif "--plh2pl2000" in sys.argv:
     
@@ -456,14 +483,17 @@ if __name__ == "__main__":
                     coords_pl2000.append([x_2000, y_2000])
                     
             with open('result_philamh_pl2000.txt', 'w') as f8:
-                f8.write('X [m], Y [m] \n')
+                f8.write('     X [m]             Y [m]    \n')
+                f8.write(33*'-'+'\n')
                 for coords in coords_pl2000:
-                    line = ','.join([str(coord) for coord in coords])
+                    line = ' , '.join([f"{coord:^15.3f}" for coord in coords])
                     f8.write(line + '\n')
+                    
+            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_pl2000.txt'")
             
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
-                
+    
             
     elif "--plh2pl1992" in sys.argv:
         
@@ -481,12 +511,97 @@ if __name__ == "__main__":
                     coords_pl1992.append([x_1992, y_1992])
                     
             with open('result_philamh_pl1992.txt', 'w') as f10:
-                f10.write('X [m], Y [m] \n')
+                f10.write('     X [m]             Y [m]    \n')
+                f10.write(32*'-'+'\n')
                 for coords in coords_pl1992:
-                    line = ','.join([str(coord) for coord in coords])
+                    line = ' , '.join([f"{coord:^15.3f}"  for coord in coords])
                     f10.write(line + '\n')
+            
+            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_pl1992.txt'")
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
             
             
+    elif "--XYZkras2XYZgrs80" in sys.argv:
+        
+        try:
+            coords_xyzgrs80= []
+            with open(input_file_path, 'r') as f11:
+                lines = f11.readlines()
+                lines = lines[header_lines:]
+                for line in lines:
+                    line = line.strip()
+                    x_str, y_str, z_str = line.split(',')
+                    x, y, z = float(x_str), float(y_str), float(z_str)
+                    xg, yg, zg = geo.transf_kras(x, y, z)
+                    coords_xyzgrs80.append([xg, yg, zg])
+                    
+            with open('result_XYZkras_XYZgrs80.txt', 'w') as f12:
+                # plik pomocniczy wiec nie formatujemy, zeby byla wieksza dokladnosc, wiec ma headerlines 0
+                for coords in coords_xyzgrs80:
+                    line = ','.join([str(coord) for coord in coords])
+                    f12.write(line + '\n')
+            
+            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZkras_XYZgrs80.txt'")
+                    
+        except FileNotFoundError:
+            print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
+            
+    
+    elif "--XYZgrs802pl2000" in sys.argv:
+        
+        try:
+            coords_pl2000_2 = []
+            with open(input_file_path, 'r') as f13:
+                lines = f13.readlines()
+                lines = lines[header_lines:]
+                for line in lines:
+                    line = line.strip()
+                    x_str, y_str, z_str = line.split(',')
+                    x, y, z = (float(x_str), float(y_str), float(z_str))
+                    phi, lam, h = geo.XYZ_philamh(x, y, z, 'calc')
+                    x_2000, y_2000 = geo.philamh_2000(phi, lam, 'calc')
+                    
+                    coords_pl2000_2.append([x_2000, y_2000])
+                    
+            with open('result_XYZgrs80_pl2000.txt', 'w') as f14:
+                f14.write('     X [m]             Y [m]    \n')
+                f14.write(33*'-'+'\n')
+                for coords in coords_pl2000_2:
+                    line = ' , '.join([f"{coord:^15.3f}" for coord in coords])
+                    f14.write(line + '\n')
+                    
+            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZgrs80_pl2000.txt'")
+            
+        except FileNotFoundError:
+            print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
+            
+            
+    elif "--XYZgrs802pl1992" in sys.argv:
+         
+         try:
+             coords_pl1992_2 = []
+             with open(input_file_path, 'r') as f15:
+                 lines = f15.readlines()
+                 lines = lines[header_lines:] 
+                 for line in lines:
+                     line = line.strip()
+                     x_str, y_str, z_str = line.split(',')
+                     x, y, z = (float(x_str), float(y_str), float(z_str))
+                     phi, lam, h = geo.XYZ_philamh(x, y, z, 'calc')
+                     x_1992, y_1992 = geo.philamh_1992(phi, lam, 'calc')
+                     
+                     coords_pl1992_2.append([x_1992, y_1992])
+                     
+             with open('result_XYZgrs80_pl1992.txt', 'w') as f16:
+                 f16.write('     X [m]             Y [m]    \n')
+                 f16.write(32*'-'+'\n')
+                 for coords in coords_pl1992_2:
+                     line = ' , '.join([f"{coord:^15.3f}" for coord in coords])
+                     f16.write(line + '\n')
+                     
+             print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZgrs80_pl1992.txt'")
+             
+         except FileNotFoundError:
+             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
