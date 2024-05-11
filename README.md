@@ -45,4 +45,29 @@ elipsoida_krasowskiego
 ```
 Do programu należy przekazać plik tekstowy ze współrzędnymi. Przykładowy format dla współrzędnych XYZ: 
 XXX.XXX,YYY.YYY,ZZZ.ZZZ
+
 Jeśli plik ze współrzędnymi zawiera sekcję nagłówka, to w programie należy wpisać jako argument liczbę linijek tego nagłówka.
+
+Argumenty należy podawać w kolejności:
+```
+python
+nazwa programu
+liczba linijek nagłówka
+model elipsoidy
+rodzaj transformacji
+nazwa pliku ze współrzędnymi
+
+```
+##### UWAGA
+W celu wykonania transformacji XYZ->NEU należy ręcznie wpisać współrzędne stanowiska po argumencie z rodzajem transformacji w kolejności XXX.XXX YYY.YYY ZZZ.ZZZ, a dopiero potem wpisać nazwę pliku ze współrzędnymi.
+
+#### Wynik końcowy
+Po poprawnym wpisaniu wszystkich argumentów wyświetli się komunikat:
+```
+ korzystasz z modelu [model elipsoidy]
+
+transformacja przebigla poprawnie
+ plik wynikowy dostepny pod nazwa 'result_[transformacja].txt'
+```
+[model elipsoidy] to wybrany model do transformacji
+[transformacja] to nazwa transformacji, która została wykonana
