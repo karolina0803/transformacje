@@ -25,3 +25,24 @@ Biblioteka numpy
 Biblioteka math
 System operacyjny Windows 10 lub 11
 ```
+### Opis programu
+Wybór transformacji odbywa się po wpisaniu jednej z następujących flag:
+```
+--xyz2plh (transformacja XYZ->PLH)
+--plh2xyz (transformacja PLH->XYZ)
+--xyz2neu (transformacja XYZ->NEU)
+--plh2pl2000 (transformacja PLH->PL-2000)
+--plh2pl1992 (transformacja PLH->PL1992)
+--XYZkras2XYZgrs80 ????
+--XYZgrs802pl2000  ????
+--XYZgrs802pl1992' ????
+```
+Wybór elipsoidy możliwy jest poprzez wpisanie tylko jednej z następujących nazw:
+```
+grs80
+wgs84
+elipsoida_krasowskiego
+```
+Do programu należy przekazać plik tekstowy ze współrzędnymi. Przykładowy format dla współrzędnych XYZ:
+XXX.XXX,YYY.YYY,ZZZ.ZZZ
+Jeśli plik ze współrzędnymi zawiera sekcję nagłówka, to w programie należy wpisać jako argument liczbę linijek tego nagłówka.
