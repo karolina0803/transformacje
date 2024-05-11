@@ -81,5 +81,23 @@ lub w przypadku XYZ->NEU:
 ```
 python transformacje_1.py 4 grs80 --xyz2neu 100.000 100.000 100.000 wsp.txt
 ```
+#### Przykładowe transformacje
+
+XYZ -> BLH dla poniższych danych:
+```
+3664940.500,1409153.590,5009571.170
+3664940.510,1409153.580,5009571.167
+```
+Wynik wyświetli się w następujący sposób w pliku o nazwie result_XYZ_philamh.txt:
+
+```
+    phi [deg]      lam [deg]         h [m]
+-----------------------------------------------
+   52.097272   ,   21.031533   ,    141.399    
+   52.097272   ,   21.031533   ,    141.400 
+```
+
+
+
 
 
