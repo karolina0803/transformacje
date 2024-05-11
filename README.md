@@ -74,9 +74,12 @@ transformacja przebigla poprawnie
 [transformacja] to nazwa transformacji, która została wykonana
 
 #### Przykład użycia
-
-````
+```
 python transformacje_1.py 4 grs80 --xyz2plh wsp.txt
+```
+lub w przypadku XYZ->NEU:
+```
+python transformacje_1.py 4 grs80 --xyz2neu 100.000 100.000 100.000 wsp.txt
 ```
 
 
