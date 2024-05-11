@@ -78,5 +78,5 @@ transformacja przebigla poprawnie
 ````
 python transformacje_1.py 4 grs80 --xyz2plh wsp.txt
 ```
-lub w przypadku XYZ->NEU:
+
 
