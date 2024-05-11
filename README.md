@@ -50,12 +50,12 @@ Jeśli plik ze współrzędnymi zawiera sekcję nagłówka, to w programie nale�
 
 Argumenty należy podawać w kolejności:
 ```
-python
-nazwa programu
-liczba linijek nagłówka
-model elipsoidy
-rodzaj transformacji
-nazwa pliku ze współrzędnymi
+1.python
+2.nazwa programu
+3.liczba linijek nagłówka
+4.model elipsoidy
+5.rodzaj transformacji
+6.nazwa pliku ze współrzędnymi
 
 ```
 ##### UWAGA
@@ -70,4 +70,5 @@ transformacja przebigla poprawnie
  plik wynikowy dostepny pod nazwa 'result_[transformacja].txt'
 ```
 [model elipsoidy] to wybrany model do transformacji
+
 [transformacja] to nazwa transformacji, która została wykonana
