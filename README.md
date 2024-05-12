@@ -113,9 +113,9 @@ Wynik wyśwetli się w następujący sposób w pliku o nazwie result_XYZ_NEU.txt
  5017888.028  ,  -1595082.221 ,  3576003.602  
  5017888.025  ,  -1595082.235 ,  3576003.602  
 ```
+#### Znane błędy
 
-
-
+1. Przy transformacji XYZ->PLH, a następnie PLH->XYZ otrzymujemy wyniki XYZ różniące się o 2 cm względem pliku wejściowego
 
 
 
