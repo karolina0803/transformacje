@@ -113,6 +113,19 @@ Wynik wyśwetli się w następujący sposób w pliku o nazwie result_XYZ_NEU.txt
  5017888.028  ,  -1595082.221 ,  3576003.602  
  5017888.025  ,  -1595082.235 ,  3576003.602  
 ```
+PLH->PL2000 dla danych:
+```
+   52.097272   ,   21.031533   ,    141.399    
+   52.097272   ,   21.031533   ,    141.400 
+```
+Wynik wyśwetli się w następujący sposób w pliku o nazwie result_philamh_pl2000.txt:
+```
+     X [m]             Y [m]    
+---------------------------------
+  5773722.697   ,   7502160.760  
+  5773722.697   ,   7502160.760 
+```
+
 #### Znane błędy
 
 1. Przy transformacji XYZ->PLH, a następnie PLH->XYZ otrzymujemy wyniki XYZ różniące się o 2 cm względem pliku wejściowego
