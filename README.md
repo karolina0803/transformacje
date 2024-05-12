@@ -46,6 +46,8 @@ elipsoida_krasowskiego
 Do programu należy przekazać plik tekstowy ze współrzędnymi. Przykładowy format dla współrzędnych XYZ: 
 XXX.XXX,YYY.YYY,ZZZ.ZZZ
 
+Plik ze współrzędnymi musi znajdować się w tym samym folderze co program do transformacji.
+
 Jeśli plik ze współrzędnymi zawiera sekcję nagłówka, to w programie należy wpisać jako argument liczbę linijek tego nagłówka.
 
 Argumenty należy podawać w kolejności:
