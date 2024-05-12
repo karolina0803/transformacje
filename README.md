@@ -1,6 +1,15 @@
 ### PROJEKT 1: TRANSFORMACJE
 
 Program służy do transformacji współrzędnych.
+## Spis treści
+* [Dostępne transformacje](#dostepne-transformacje)
+* [Dostępne elipsoidy](#dostepne-elipsoidy)
+* [Wymagania](#wymagania)
+* [Opis programu](#opis-programu)
+* [Wynik końcowy](#wynik-koncowy)
+* [Przykład użycia](#przykladowe-transformacje)
+* [Znane błędy](#znane-bledy)
+
 #### Dostępne transformacje:
 ```
 XYZ -> PLH (Zamiana współrzędnych geocentrycznych na elipsoidalne)
