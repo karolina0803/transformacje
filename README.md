@@ -2,13 +2,13 @@
 
 Program służy do transformacji współrzędnych.
 ## Spis treści
-* [Dostępne transformacje](#dostepne-transformacje)
-* [Dostępne elipsoidy](#dostepne-elipsoidy)
+* [Dostępne transformacje](#dostępne-transformacje)
+* [Dostępne elipsoidy](#dostępne-elipsoidy)
 * [Wymagania](#wymagania)
 * [Opis programu](#opis-programu)
-* [Wynik końcowy](#wynik-koncowy)
-* [Przykład użycia](#przykladowe-transformacje)
-* [Znane błędy](#znane-bledy)
+* [Wynik końcowy](#wynik-końcowy)
+* [Przykład użycia](#przykładowe-transformacje)
+* [Znane błędy](#znane-błędy)
 
 #### Dostępne transformacje:
 ```
