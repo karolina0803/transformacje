@@ -72,7 +72,9 @@ Argumenty należy podawać w kolejności:
 
 ```
 ##### UWAGA
-W celu wykonania transformacji XYZ->NEU należy ręcznie wpisać współrzędne geocentryczne stanowiska po argumencie z rodzajem transformacji w kolejności XXX.XXX YYY.YYY ZZZ.ZZZ, a dopiero potem wpisać nazwę pliku ze współrzędnymi.
+1. W celu wykonania transformacji XYZ->NEU należy ręcznie wpisać współrzędne geocentryczne stanowiska po argumencie z rodzajem transformacji w kolejności XXX.XXX YYY.YYY ZZZ.ZZZ, a dopiero potem wpisać nazwę pliku ze współrzędnymi.
+2. Tranformację XYZ na elipsoidzie Krasowskiego do układów PL2000 i PL1992 należy wykonywać dwuetapowo: najpierw XYZ (Krasowski) -> XYZ (GRS80), a następnie należy użyć pliku wynikowego do kolejnej transformacji. 
+Plik pośredni nie jest formatowany w celu zachowania lepszej dokładności
 
 #### Wynik końcowy
 Po poprawnym wpisaniu wszystkich argumentów wyświetli się komunikat:
