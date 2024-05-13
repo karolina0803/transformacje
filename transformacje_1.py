@@ -404,7 +404,7 @@ if __name__ == "__main__":
                     line = ','.join([f"{coord:^15.6f}" if index!= 2 else f"{coord:^15.3f}" for index, coord in enumerate(coords)])
                     f1.write(line + '\n')
                     
-            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZ_philamh.txt'")
+            print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZ_philamh.txt'")
         
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -433,7 +433,7 @@ if __name__ == "__main__":
                     line = ','.join([f"{coord:^15.3f}" for coord in coords])
                     f4.write(line + '\n')
                     
-            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_XYZ.txt'")
+            print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_XYZ.txt'")
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -461,7 +461,7 @@ if __name__ == "__main__":
                     line = ', '.join([f"{coord:^14.3f}" for coord in coords])
                     f6.write(line + '\n')
                     
-            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZ_NEU.txt'")
+            print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZ_NEU.txt'")
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -489,7 +489,7 @@ if __name__ == "__main__":
                     line = ' , '.join([f"{coord:^15.3f}" for coord in coords])
                     f8.write(line + '\n')
                     
-            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_pl2000.txt'")
+            print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_pl2000.txt'")
             
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -517,7 +517,7 @@ if __name__ == "__main__":
                     line = ' , '.join([f"{coord:^15.3f}"  for coord in coords])
                     f10.write(line + '\n')
             
-            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_pl1992.txt'")
+            print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_philamh_pl1992.txt'")
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -543,7 +543,7 @@ if __name__ == "__main__":
                     line = ','.join([str(coord) for coord in coords])
                     f12.write(line + '\n')
             
-            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZkras_XYZgrs80.txt'")
+            print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZkras_XYZgrs80.txt'")
                     
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -572,7 +572,7 @@ if __name__ == "__main__":
                     line = ' , '.join([f"{coord:^15.3f}" for coord in coords])
                     f14.write(line + '\n')
                     
-            print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZgrs80_pl2000.txt'")
+            print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZgrs80_pl2000.txt'")
             
         except FileNotFoundError:
             print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
@@ -601,7 +601,7 @@ if __name__ == "__main__":
                      line = ' , '.join([f"{coord:^15.3f}" for coord in coords])
                      f16.write(line + '\n')
                      
-             print("transformacja przebigla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZgrs80_pl1992.txt'")
+             print("transformacja przebiegla poprawnie\n plik wynikowy dostepny pod nazwa 'result_XYZgrs80_pl1992.txt'")
              
          except FileNotFoundError:
              print('sprawdz czy nazwa pliku wejsciowego jest poprawna\n')
