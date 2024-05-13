@@ -12,7 +12,6 @@ Program służy do transformacji współrzędnych.
 
 #### Dostępne transformacje:
 
-ok
 ```
 XYZ -> PLH (Zamiana współrzędnych geocentrycznych na elipsoidalne)
 PLH -> XYZ (Zamiana współrzędnych elipsoidalnych na geocentryczne)
