@@ -196,7 +196,7 @@ class Transformacje:
     
     def XYZ_neu(self, X, Y, Z, X0, Y0, Z0):
         """
-        
+        funkcja transformujaca wspolrzedne geocentryczne do ukladu topocentrycznego (lokalnego)
 
         Parameters
         ----------
@@ -205,7 +205,7 @@ class Transformacje:
 
         Returns
         -------
-       N, E, U - [float] współrzędne satelity w układzie topocentrycznym
+        N, E, U - [float] współrzędne satelity w układzie topocentrycznym
 
         """
        
