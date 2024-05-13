@@ -11,6 +11,8 @@ Program służy do transformacji współrzędnych.
 * [Znane błędy](#znane-błędy)
 
 #### Dostępne transformacje:
+
+ok
 ```
 XYZ -> PLH (Zamiana współrzędnych geocentrycznych na elipsoidalne)
 PLH -> XYZ (Zamiana współrzędnych elipsoidalnych na geocentryczne)
@@ -23,7 +25,6 @@ XYZgrs80 -> PL1992 (Zamiana współrzędnych na elipsoidzie GRS80 na współrzę
 ```
 #### Dostępne elipsoidy
 
-cokolwiek
 ```
 GRS80
 WGS84
