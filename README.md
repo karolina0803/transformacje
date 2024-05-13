@@ -22,6 +22,8 @@ XYZgrs80 -> PL2000 (Zamiana współrzędnych na elipsoidzie GRS80 na współrzę
 XYZgrs80 -> PL1992 (Zamiana współrzędnych na elipsoidzie GRS80 na współrzędne w układzie PL1992)
 ```
 #### Dostępne elipsoidy
+
+cokolwiek
 ```
 GRS80
 WGS84
